@@ -22,7 +22,6 @@ export default class ConfirmationCodeInput extends Component {
     codeInputStyle: TextInput.propTypes.style,
     containerStyle: viewPropTypes.style,
     onFulfill: PropTypes.func,
-    onCodeChange: PropTypes.func,
   };
   
   static defaultProps = {
@@ -36,7 +35,7 @@ export default class ConfirmationCodeInput extends Component {
     inactiveColor: 'rgba(255, 255, 255, 0.2)',
     space: 8,
     compareWithCode: '',
-    ignoreCase: false,
+    ignoreCase: false
   };
   
   constructor(props) {
@@ -152,10 +151,10 @@ export default class ConfirmationCodeInput extends Component {
   }
   
   _getClassStyle(className, active) {
-    const { cellBorderWidth, activeColor, inactiveColor, space } = this.props;
+    const { cellBorderWidth, activeColor, inactiveColor, space, activeBorderColor, inActiveBorderColor } = this.props;
     let classStyle = {
       ...this._getInputSpaceStyle(space),
-      color: activeColor
+      color: activeColor,
     };
     
     switch (className) {
@@ -164,30 +163,30 @@ export default class ConfirmationCodeInput extends Component {
       case 'border-box':
         return _.merge(classStyle, {
           borderWidth: cellBorderWidth,
-          borderColor: (active ? activeColor : inactiveColor)
+          borderColor: (active ? activeBorderColor : inActiveBorderColor),
         });
       case 'border-circle':
         return _.merge(classStyle, {
           borderWidth: cellBorderWidth,
           borderRadius: 50,
-          borderColor: (active ? activeColor : inactiveColor)
+          borderColor: (active ? activeBorderColor : inActiveBorderColor)
         });
       case 'border-b':
         return _.merge(classStyle, {
           borderBottomWidth: cellBorderWidth,
-          borderColor: (active ? activeColor : inactiveColor),
+          borderColor: (active ? activeBorderColor : inActiveBorderColor),
         });
       case 'border-b-t':
         return _.merge(classStyle, {
           borderTopWidth: cellBorderWidth,
           borderBottomWidth: cellBorderWidth,
-          borderColor: (active ? activeColor : inactiveColor)
+          borderColor: (active ? activeBorderColor : inActiveBorderColor)
         });
       case 'border-l-r':
         return _.merge(classStyle, {
           borderLeftWidth: cellBorderWidth,
           borderRightWidth: cellBorderWidth,
-          borderColor: (active ? activeColor : inactiveColor)
+          borderColor: (active ? activeBorderColor : inActiveBorderColor)
         });
       default:
         return className;
@@ -197,20 +196,13 @@ export default class ConfirmationCodeInput extends Component {
   _onKeyPress(e) {
     if (e.nativeEvent.key === 'Backspace') {
       const { currentIndex } = this.state;
-      let newCodeArr = _.clone(this.state.codeArr);
       const nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
-      for (const i in newCodeArr) {
-        if (i >= nextIndex) {
-          newCodeArr[i] = '';
-        }
-      }
-      this.props.onCodeChange(newCodeArr.join(''))
       this._setFocus(nextIndex);
     }
   }
   
   _onInputCode(character, index) {
-    const { codeLength, onFulfill, compareWithCode, ignoreCase, onCodeChange } = this.props;
+    const { codeLength, onFulfill, compareWithCode, ignoreCase } = this.props;
     let newCodeArr = _.clone(this.state.codeArr);
     newCodeArr[index] = character;
     
@@ -234,7 +226,7 @@ export default class ConfirmationCodeInput extends Component {
         codeArr: newCodeArr,
         currentIndex: prevState.currentIndex + 1
       };
-    }, () => { onCodeChange(newCodeArr.join('')) });
+    });
   }
   
   render() {
@@ -246,8 +238,11 @@ export default class ConfirmationCodeInput extends Component {
       autoFocus,
       className,
       size,
-      activeColor
+      activeColor,
+      activeBackground,
+      inActiveBackground
     } = this.props;
+    const { currentIndex } = this.state;
     
     const initialCodeInputStyle = {
       width: size,
@@ -262,7 +257,9 @@ export default class ConfirmationCodeInput extends Component {
           key={id}
           ref={ref => (this.codeInputRefs[id] = ref)}
           style={[
-            styles.codeInput, 
+            styles.codeInput,
+            { backgroundColor: i< currentIndex ? activeBackground : inActiveBackground,
+             },
             initialCodeInputStyle, 
             this._getClassStyle(className, this.state.currentIndex == id),
             codeInputStyle
