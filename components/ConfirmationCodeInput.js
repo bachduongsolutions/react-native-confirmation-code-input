@@ -22,6 +22,7 @@ export default class ConfirmationCodeInput extends Component {
     codeInputStyle: TextInput.propTypes.style,
     containerStyle: viewPropTypes.style,
     onFulfill: PropTypes.func,
+    onFocus: PropTypes.func
   };
   
   static defaultProps = {
@@ -35,7 +36,8 @@ export default class ConfirmationCodeInput extends Component {
     inactiveColor: 'rgba(255, 255, 255, 0.2)',
     space: 8,
     compareWithCode: '',
-    ignoreCase: false
+    ignoreCase: false,
+    onFocus: () => {}
   };
   
   constructor(props) {
@@ -88,6 +90,8 @@ export default class ConfirmationCodeInput extends Component {
       }
     }
     
+    this.props.onFocus()
+
     this.setState({
       codeArr: newCodeArr,
       currentIndex: index
